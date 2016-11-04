@@ -64,3 +64,6 @@ def istext(s):
     if len(t)/len(s) > 0.30:
         return 0
     return 1
+
+def load(file):
+    pass

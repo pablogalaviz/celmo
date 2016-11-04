@@ -9,7 +9,11 @@ Main execution function
 from celmo.interface.api import * 
 from celmo.util.data import find_datafiles
 
-from yt.mods import 
+try:
+    from yt.mods import load
+except ImportError:
+    from celmo.util.data import load
+    
     
 def main():    
     
@@ -77,6 +81,8 @@ def main():
         logging.warn("No enzo data found in: %s",data_directory)
         return errno.EIO
         
+    pf = load(data[0])
+    
     
     
 if __name__ == '__main__':
