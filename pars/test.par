@@ -1,0 +1,10 @@
+[output]
+
+directory=~/data/celmo
+datafiles=~/data/enzo/data/DD0000
+overwrite=no
+[model]
+
+effective_temperature=3500
+mol_weight=1.2
+floor_density=1e-9
