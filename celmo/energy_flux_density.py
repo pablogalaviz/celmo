@@ -4,12 +4,45 @@ import numpy as np
 from scipy import integrate
 
 '''
-Created on 10 Nov 2016
-
-@author: Pablo Galaviz
+//
+// Made by Pablo Galaviz
+// e-mail  <pablogalavizv@gmail.com>
+// 
+//  This file is part of CELMO
+//
+//  CELMO is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  any later version.
+//
+//  CELMO is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with CELMO.  If not, see <http://www.gnu.org/licenses/>.
+//
 '''
-
 def integrate_dI(_dI, _r, _dr):
+
+    '''
+    |
+    | Function that integrates the intensity in a given direction  
+    | 
+    |
+    |  Parameters
+    |  ----------
+    |  _dI : a 1d numpy array of the differential intensity    
+    |  _r  : coordinate in a given direction    
+    |  _dr : grid size in a given direction    
+    |  
+    |  Returns
+    |  -------
+    |
+    |  intensity  : numpy array of the intensity   
+    |
+    '''
 
     indx_dL = _dI>1
     DeltaL= _dr[indx_dL].sum()
@@ -21,6 +54,29 @@ def integrate_dI(_dI, _r, _dr):
 
 
 def compute_energy_flux_density(cel_data):
+
+    '''
+    |
+    | Function that computes the energy flux density for each face of a cubic domain   
+    |
+    |  Notation
+    |  ----------
+    |  EFD   : energy flux density
+    |  B,I,V : filters Bolometric (no filter), I band, V band
+    |  m,p   : minus, plus
+    |  X,Y,Z : each direction 
+    |  For example EFD_B_mZ refers to the bolometric energy flux density with normal  direction -Z (face XY) 
+    |
+    |  Parameters
+    |  ----------
+    |  cel_data : celmo data with differential brightness and extinction factor    
+    |  
+    |  Returns
+    |  -------
+    |
+    |  None  : the new fields are saved in celmo data  
+    |
+    '''
 
     EFD_bool = cel_data.exists('EFD_B_mX') and cel_data.exists('EFD_B_pX')
     EFD_bool = cel_data.exists('EFD_B_mY') and cel_data.exists('EFD_B_pY') and EFD_bool 
@@ -42,7 +98,7 @@ def compute_energy_flux_density(cel_data):
     logging.info("Computing energy flux density field.")
 
 
-    domain_dimensions = cel_data.get_parameter('grid_size')
+    domain_dimensions = cel_data.get_int_parameter('grid_size')
     Nmax = int(np.max(domain_dimensions))
             
 
@@ -120,8 +176,8 @@ def compute_energy_flux_density(cel_data):
 
 
 
-    for indx_1 in xrange(Nmax) :
-        for indx_2 in xrange(Nmax) :
+    for indx_1 in np.arange(Nmax) :
+        for indx_2 in np.arange(Nmax) :
             if indx_1 <= domain_dimensions[0] and indx_2 <= domain_dimensions[1] :
                 
                 zz=z[indx_1,indx_2]
@@ -190,3 +246,4 @@ def compute_energy_flux_density(cel_data):
     cel_data.set_field('EFD_I_mZ', EFD_I_mZ)
     cel_data.set_field('EFD_I_pZ', EFD_I_pZ)
     
+    cel_data.save()

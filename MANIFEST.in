@@ -1,0 +1,5 @@
+include README.md
+include celmo/data/filters/Filter_OGLE_I.celf
+include celmo/data/filters/Filter_OGLE_V.celf
+include celmo/data/opacity_tables/OP_z2m2_x70.data
+include celmo/data/opacity_tables/lowT_af94_gn93_z2m2_x70.data

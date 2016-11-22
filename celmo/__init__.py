@@ -26,3 +26,4 @@ from celmo.brightness import compute_brightness
 from celmo.extinction_factor import compute_extinction_factor
 from celmo.energy_flux_density import compute_energy_flux_density
 from celmo.luminosity import compute_luminosity
+

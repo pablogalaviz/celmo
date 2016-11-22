@@ -1,12 +1,56 @@
-'''
-Created on 8 Nov 2016
 
-@author: Pablo Galaviz
-'''
 import logging
 import numpy as np
 
+'''
+//
+// Made by Pablo Galaviz
+// e-mail  <pablogalavizv@gmail.com>
+// 
+//  This file is part of CELMO
+//
+//  CELMO is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  any later version.
+//
+//  CELMO is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with CELMO.  If not, see <http://www.gnu.org/licenses/>.
+//
+'''
+
+
 def compute_temperature( Teff, mu, rho0,cel_data):
+
+
+    '''
+    |
+    | Function that computes the temperature 
+    | 
+    |  Notation
+    |  ----------
+    |  temperature_vacuum   : temperature including the hot vacuum 
+    |  temperature          : temperature without the hot vacuum (exterior is set to 0)
+    |
+    |  Parameters
+    |  ----------
+    |  Teff : effective temperature    
+    |  mu   : mean molecular weight    
+    |  Rho0 : density flor    
+    |  cel_data : celmo data with optical depth in each direction      
+    |  
+    |  Returns
+    |  -------
+    |
+    |  None  : the new fields are saved in celmo data  
+    |
+    '''
+
 
     if cel_data.exists('temperature_vacuum') and cel_data.exists('temperature'):
         logging.info("Found temperature.")

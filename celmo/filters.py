@@ -1,9 +1,3 @@
-'''
-Created on 9 Nov 2016
-
-@author: Pablo Galaviz
-'''
-
 import logging
 import numpy as np
 import os 
@@ -11,8 +5,50 @@ import os
 from scipy import integrate
 
 
+'''
+//
+// Made by Pablo Galaviz
+// e-mail  <pablogalavizv@gmail.com>
+// 
+//  This file is part of CELMO
+//
+//  CELMO is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  any later version.
+//
+//  CELMO is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with CELMO.  If not, see <http://www.gnu.org/licenses/>.
+//
+'''
+
+
 def compute_filters(cel_data):
 
+    '''
+    |
+    | Function that computes the filter factors 
+    | 
+    |  Notation
+    |  ----------
+    |  I,V :  I band, V band
+    | 
+    |
+    |  Parameters
+    |  ----------
+    |  cel_data : celmo data      
+    |  
+    |  Returns
+    |  -------
+    |
+    |  None  : the new fields are saved in celmo data  
+    |
+    '''
 
     if cel_data.exists('filter_factorI') and  cel_data.exists('filter_factorV'):
         logging.info("Found filters")
@@ -35,7 +71,7 @@ def compute_filters(cel_data):
         if f.find('.celf') >0:
             _data_file = filters_directory+f
             cel_filter = CelmoFilter(_data_file, cel_data)                
-            filter_factor =np.reshape( cel_filter.Factors(temperature),cel_data.get_parameter('grid_size'))
+            filter_factor =np.reshape( cel_filter.Factors(temperature),cel_data.get_int_parameter('grid_size'))
             if f.find('I.celf') > 0 :
                 cel_data.set_field('filter_factorI', filter_factor)
             elif f.find('V.celf') > 0 :
@@ -47,10 +83,30 @@ def compute_filters(cel_data):
 
 class CelmoFilter(object) : 
 
-    """CEL filters"""
+    '''
+    |
+    | Common Envelope Luminosity Module Filters.
+    |
+    '''
 
 
     def __init__(self, _data_file,cel_data):
+
+        '''
+        |
+        |  This c
+        |
+        |  Parameters
+        |  ----------
+        |  _data_file : a path to the filter table    
+        |  cel_data   : celmo data container
+        |
+        |  Returns
+        |  -------
+        |
+        |  None  : the new fields are saved in celmo data  
+        |
+        '''
 
         self.cel_data = cel_data
 
@@ -63,7 +119,6 @@ class CelmoFilter(object) :
 
     def f  (self,x) :
         return x**3/(np.exp(x)-1)
-
 
         
     def Lambda2xiT(self,lmbd) :
@@ -84,15 +139,12 @@ class CelmoFilter(object) :
         xi = self.filterAt(T)
 
         return 15*np.abs(integrate.simps(self.f(xi)*self.y, xi, even='avg'))/np.pi**4
-        
-    
-
 
 
     def Factors(self, TT) : 
         dims = TT.shape
         data = np.ones_like(TT)
-        for indx_x in xrange(dims[0]) :
+        for indx_x in np.arange(dims[0]) :
             data[indx_x] = self.getFilterFactor(TT[indx_x])
 
         return data

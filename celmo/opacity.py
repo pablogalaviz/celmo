@@ -6,7 +6,47 @@ import numpy as np
 import os
 import gc
 
+'''
+//
+// Made by Pablo Galaviz
+// e-mail  <pablogalavizv@gmail.com>
+// 
+//  This file is part of CELMO
+//
+//  CELMO is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  any later version.
+//
+//  CELMO is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with CELMO.  If not, see <http://www.gnu.org/licenses/>.
+//
+'''
+
+
 def compute_opacity(cel_data):
+
+    '''
+    |
+    | Function that computes the opacity 
+    | 
+    |
+    |  Parameters
+    |  ----------
+    |  cel_data : celmo data with temperature and density       
+    |  
+    |  Returns
+    |  -------
+    |
+    |  None  : the new fields are saved in celmo data  
+    |
+    '''
+
 
     if cel_data.exists('opacity') :
         logging.info("Found opacity field.")
@@ -27,7 +67,8 @@ def compute_opacity(cel_data):
     
     OpacityData = Opacity(opacity_directory+"lowT_af94_gn93_z2m2_x70.data",opacity_directory+"OP_z2m2_x70.data")
 
-    logT = np.zeros(cel_data.get_parameter('grid_size'), dtype='float64')
+    grid_size=[int(i) for i in cel_data.get_parameter('grid_size')]
+    logT = np.zeros(grid_size, dtype='float64')
 
     temperature = cel_data.get_field('temperature')
 
@@ -49,7 +90,7 @@ def compute_opacity(cel_data):
     logR[indxLR] = -7
     logR[indxUR] = 1
 
-    opacity=np.reshape( np.power(10,OpacityData.ev(logT.flatten(),logR.flatten())), cel_data.get_parameter('grid_size'))
+    opacity=np.reshape( np.power(10,OpacityData.ev(logT.flatten(),logR.flatten())), grid_size)
     
     del OpacityData
     gc.collect()
@@ -59,13 +100,25 @@ def compute_opacity(cel_data):
     opacity[indxOut] = 0
 
     cel_data.set_field('opacity',opacity)
+    cel_data.save()
 
 
 class Opacity(object):
 
+    '''
+    |
+    | Common Envelope Luminosity Module Opacity interpolation.
+    |
+    '''
+
+
     def __init__(self, _file_nameL, _file_nameH):
         
-        """Reads the opacity from tables and create a numpy rectangular bivariate spline interpolation."""
+        '''
+        |
+        |  Reads the opacity from tables and create a numpy rectangular bivariate spline interpolation.
+        |
+        '''
 
 
         self.opintL = self.interpolateOpacityTable(_file_nameL)    
@@ -75,13 +128,24 @@ class Opacity(object):
 
     def interpolateOpacityTable(self,file_name):
 
+        '''
+        |  Parameters
+        |  ----------
+        |  file_name : opacity table file     
+        |  
+        |  Returns
+        |  -------
+        |
+        |  RectBivariateSpline  : rectangular bivariate spline  
+        |
+        '''
+
         flines = open(file_name, 'r').readlines()
 
         logging.info("Reading opacity from file: %s",file_name)
 
         num_of_lines = len(flines)
-
-        Np1 = len( flines[num_of_lines/2].split())
+        Np1 = len( flines[int(num_of_lines/2)].split())
         N=Np1-1
 
         logT=np.empty(0)
@@ -107,6 +171,30 @@ class Opacity(object):
     
 
     def ev(self, logT, logR):
+ 
+        '''
+        |
+        |  Evaluates the opacity in a grid 
+        |
+        |  Notation
+        |  ----------
+        |  T   : temperature 
+        |  Rho : density 
+        |  R   : exp(log(Rho) - 3*log(T) + 18) 
+        |
+        |
+        |  Parameters
+        |  ----------
+        |  logT : log(T)      
+        |  logR : log(R)      
+        |  
+        |  Returns
+        |  -------
+        |
+        |  RectBivariateSpline  : rectangular bivariate spline  
+        |
+        '''
+
         
         if len(logT) != len(logR):
             logging.error("Incompatible opacity arrays...")

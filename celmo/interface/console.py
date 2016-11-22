@@ -1,13 +1,27 @@
-'''
-Console interface
-
-@author: Pablo Galaviz
-'''
-
-import errno
 import logging
-import os 
-import shutil
+
+'''
+//
+// Made by Pablo Galaviz
+// e-mail  <pablogalavizv@gmail.com>
+// 
+//  This file is part of CELMO
+//
+//  CELMO is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  any later version.
+//
+//  CELMO is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with CELMO.  If not, see <http://www.gnu.org/licenses/>.
+//
+'''
+
 
 def get_epilog():
     return ''' 
@@ -24,25 +38,6 @@ There is NO WARRANTY, to the extent permitted by law.
 
 
 
-
-def file_exists(data_file, must_exist=False):
-
-    is_dir=False
-    if os.path.exists(data_file):
-        if not os.path.isdir(data_file):
-            return True
-        is_dir=True
-        
-    if must_exist:
-        if is_dir:
-            logging.error('%s is a directory!', data_file)
-        else:
-            logging.error('File %s does not exist!', data_file)
-
-        exit(errno.ENOENT)
-    else :
-        return False
-
 def parse_settings(config_data,arg_data):
             
     for k,v in arg_data.__dict__.items():
@@ -52,38 +47,6 @@ def parse_settings(config_data,arg_data):
             
     return config_data
 
-def validate_and_make_directory(_directory):
-
-    _directory = _directory.replace('//', '/')
-    
-    if os.path.exists(_directory):
-        if not os.path.isdir(_directory):
-            logging.error("The output %s is a regular file",_directory)
-            exit(errno.EIO)
-        else:
-            if os.path.exists(_directory+'_prev'):
-                shutil.rmtree(_directory+'_prev')
-            shutil.move(_directory, _directory+'_prev')
-
-    try:
-        logging.info("Making directory %s.",_directory)
-        os.makedirs(_directory)
-        return _directory
-    except:
-        logging.exception('').replace('//', '/')
-        exit(errno.EIO)
-
-def expand_path(path, default):
-    if path == None:
-        path = os.path.abspath(os.path.curdir+'/'+default+'/').replace('//','/')
-
-    if '~' in path:
-        path = os.path.expanduser(path)
-
-    if '$' in path:
-        path = os.path.expandvars(path)
-        
-    return os.path.abspath(path)
 
 
 def display_welcome():
